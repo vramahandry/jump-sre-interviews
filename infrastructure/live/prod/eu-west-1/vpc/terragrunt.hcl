@@ -19,9 +19,12 @@ inputs = {
   cidr   = "10.0.0.0/16"
   azs    = ["${local.aws_region}a", "${local.aws_region}b", "${local.aws_region}c"]
 
-  private_subnets = ["10.0.0.0/18", "10.0.64.0/18", "10.0.128.0/18"]
-  intra_subnets   = ["10.0.192.0/27", "10.0.192.32/27", "10.0.192.64/27"]
-  public_subnets  = ["10.0.200.0/27", "10.0.200.32/27", "10.0.200.64/27"]
+  private_subnets  = ["10.0.0.0/18", "10.0.64.0/18", "10.0.128.0/18"]
+  intra_subnets    = ["10.0.192.0/27", "10.0.192.32/27", "10.0.192.64/27"]
+  public_subnets   = ["10.0.200.0/27", "10.0.200.32/27", "10.0.200.64/27"]
+  database_subnets = ["10.0.201.0/27", "10.0.201.32/27", "10.0.201.64/27"]
+
+  create_database_subnet_group = true
 
   enable_nat_gateway = true
   single_nat_gateway = true
