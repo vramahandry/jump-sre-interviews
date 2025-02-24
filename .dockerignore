@@ -1,0 +1,4 @@
+*.md
+deployments
+infrastructure
+.gitignore
