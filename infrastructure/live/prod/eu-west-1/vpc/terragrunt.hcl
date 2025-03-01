@@ -24,6 +24,10 @@ inputs = {
   public_subnets   = ["10.0.200.0/27", "10.0.200.32/27", "10.0.200.64/27"]
   database_subnets = ["10.0.201.0/27", "10.0.201.32/27", "10.0.201.64/27"]
 
+  private_subnet_tags = {
+    "karpenter.sh/discovery" = "${local.environment}"
+  }
+
   create_database_subnet_group = true
 
   enable_nat_gateway = true

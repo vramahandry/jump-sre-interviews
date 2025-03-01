@@ -21,7 +21,19 @@ inputs = {
 
   # EKS Addons
   cluster_addons = {
-    coredns    = {}
+    coredns = {
+      configuration_values = jsonencode({
+        tolerations = [
+          # Allow CoreDNS to run on the same nodes as the Karpenter controller
+          # for use during cluster creation when Karpenter nodes do not yet exist
+          {
+            key    = "karpenter.sh/controller"
+            value  = "true"
+            effect = "NoSchedule"
+          }
+        ]
+      })
+    }
     kube-proxy = {}
     vpc-cni    = {}
   }
@@ -51,14 +63,34 @@ inputs = {
   eks_managed_node_groups = {
     test = {
       ami_type       = "BOTTLEROCKET_ARM_64"
-      instance_types = ["t4g.medium"]
+      instance_types = ["t4g.small"]
 
       min_size = 1
       max_size = 1
       # This value is ignored after the initial creation
       # https://github.com/bryantbiggs/eks-desired-size-hack
       desired_size = 1
+
+      labels = {
+        # Used to ensure Karpenter runs on nodes that it does not manage
+        "karpenter.sh/controller" = "true"
+      }
+      taints = {
+        # The pods that do not tolerate this taint should run on nodes
+        # created by Karpenter
+        karpenter = {
+          key    = "karpenter.sh/controller"
+          value  = "true"
+          effect = "NO_SCHEDULE"
+        }
+      }
     }
+  }
+  node_security_group_tags = {
+    # NOTE - if creating multiple security groups with this module, only tag the
+    # security group that Karpenter should utilize with the following tag
+    # (i.e. - at most, only one security group should have this tag in your account)
+    "karpenter.sh/discovery" = "${local.environment}"
   }
 
   enable_cluster_creator_admin_permissions = true
